@@ -13,7 +13,7 @@ fn main() {
     // println!("{:?}", res.wait());
     // let results: TwitterResults = getTweets(query, None, None, None).unwrap();
     start_groupme_bot(
-        env::var("GROUPME_TOKEN").unwrap(),
         env::var("GROUPME_GROUP").unwrap(),
+        env::var("GROUPME_TOKEN").unwrap(),
     );
 }

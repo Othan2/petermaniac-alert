@@ -18,12 +18,13 @@ impl GroupmeClient {
         }
     }
 
-    pub(super) async fn post(
+    pub(super) fn post(
         &self,
         bot_id: &str,
         text: &str,
         picture_url: Option<&str>,
     ) -> Result<(), GroupmeError> {
+    // ) {
         let mut body = HashMap::new();
         body.insert("bot_id", bot_id);
         body.insert("text", text);
@@ -31,14 +32,13 @@ impl GroupmeClient {
             body.insert("picture_url", picture_url);
         }
 
-        let response = self
+        self
             .client
             .post(&format!("{}/bots/post", self.path))
             .json(&body)
             .send()
-            .await;
 
-        println!("posted\n{:?}", response);
+        // println!("posted\n{:?}", response);
 
         // match response {
         //     reqwest::StatusCode::ACCEPTED => Ok(),
@@ -52,7 +52,7 @@ impl GroupmeClient {
         //     return Err(GroupmeError::BadHeaderError(response.status()));
         // }
 
-        Ok(())
+        // Ok(response) 
     }
 
     pub(super) async fn create(

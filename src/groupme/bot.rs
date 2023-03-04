@@ -31,8 +31,7 @@ impl Bot {
     /// ```
     pub fn post(&self, text: &str) -> Result<(), GroupmeError> {
         let gm_client = &self.client;
-        gm_client.post(&self.bot_id, text, None);
-        Ok(())
+        gm_client.post(&self.bot_id, text, None)
     }
 
     /// Causes the bot to post an image and message.

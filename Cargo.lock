@@ -79,6 +79,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cooked-waker"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "147be55d677052dabc6b22252d5dd0fd4c29c8c27aa4f2fbef0f94aa003b406f"
+
+[[package]]
 name = "core-foundation"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -649,7 +655,9 @@ name = "petermaniac-alert"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "cooked-waker",
  "futures-executor",
+ "pin-utils",
  "reqwest",
  "security-framework",
  "serde",

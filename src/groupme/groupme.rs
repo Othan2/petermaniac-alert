@@ -80,6 +80,7 @@ impl Groupme {
     ///
     pub fn create_bot(&self, name: &str, group_id: &str) -> Result<BotBuilder, GroupmeError> {
         if let Some(ref token) = self.token {
+            println!("Successfully created bot.");
             let builder = BotBuilder::new(name, group_id, self.client.clone(), &token);
             return Ok(builder);
         }
