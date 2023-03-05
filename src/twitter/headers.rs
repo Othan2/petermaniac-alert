@@ -1,12 +1,17 @@
-use crate::twitter::constants::{DEFAULT_AUTH_TOKEN, GENERATE_GUEST_TOKEN_URL};
+use crate::twitter::constants::{GENERATE_GUEST_TOKEN_URL};
 use reqwest::blocking::Client;
 use serde_json::Value;
+use lazy_static::lazy_static;
 
 pub fn get_headers(
     auth_token_option: Option<&'static str>,
     guest_token_option: Option<&'static str>,
 ) -> Result<[(&'static str, &'static str); 2], Box<dyn std::error::Error>> {
-    let auth_token: &'static str = auth_token_option.unwrap_or(DEFAULT_AUTH_TOKEN);
+    let x = 0;
+    lazy_static! {
+        static ref default_auth_token: String = std::env::var("TWITTER_API_TOKEN").unwrap();
+    } 
+    let auth_token: &'static str = auth_token_option.unwrap_or(&default_auth_token);
     let guest_token: &'static str;
     if guest_token_option.is_some() {
         guest_token = guest_token_option.unwrap();
