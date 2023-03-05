@@ -3,14 +3,18 @@ mod headers;
 mod models;
 mod parser;
 mod request_builder;
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 use constants::TWITTER_BASE_URL;
 use headers::get_headers;
 pub use models::{Tweet, User};
 use parser::{get_next_cursor, get_tweets, get_users};
 use request_builder::RequestConfig;
-use reqwest::{Client, Response};
+use reqwest::blocking::{Client, Response};
 use serde_json::Value;
+use std::collections::HashSet;
+extern crate lazy_static;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 
 #[derive(Debug)]
 pub struct TwitterResults {
@@ -20,25 +24,24 @@ pub struct TwitterResults {
     pub users: Option<Vec<User>>,
 }
 
-pub async fn get_twitter_result(
+pub fn get_twitter_result(
     query: String,
     auth_token_option: Option<&'static str>,
     guest_token_option: Option<&'static str>,
     cursor: Option<String>,
 ) -> Result<TwitterResults, Box<dyn std::error::Error>> {
     let headers_tuples: [(&'static str, &'static str); 2] =
-        get_headers(auth_token_option, guest_token_option).await?;
+        get_headers(auth_token_option, guest_token_option).unwrap();
     let request_config: RequestConfig =
         request_builder::build_request_config(&headers_tuples, query, cursor.clone());
-    let client: Client = Client::new();
+    let client: reqwest::blocking::Client = reqwest::blocking::Client::new();
     let response: Response = client
         .get(TWITTER_BASE_URL)
         .query(&request_config.path_query)
         .headers(request_config.headers)
         .send()
-        .await?
-        .error_for_status()?;
-    let body_data: Value = response.json::<Value>().await?;
+        .unwrap();
+    let body_data: Value = response.json::<Value>()?;
     let next_cursor: String = get_next_cursor(&body_data, cursor)?;
     let tweets: Vec<Tweet> = get_tweets(&body_data);
     let users: Vec<User> = get_users(&body_data);
@@ -52,22 +55,42 @@ pub async fn get_twitter_result(
     Ok(twitter_results)
 }
 
-#[tokio::main]
-pub async fn get_tweet_urls_since(
-    since_date: NaiveDate,
+pub fn get_tweet_urls_since(
+    since_date: NaiveDateTime,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
+    // For deduplicating tweets
+    lazy_static! {
+        static ref TWEET_IDS: Mutex<HashSet<u64>> = Mutex::new(HashSet::new());
+    }
+
     let query: String = format!(
         "{} since:{}",
         constants::PETERMANIAC_SLUG,
         since_date.format("%Y-%m-%d").to_string()
     );
-    let results: Vec<String> = get_twitter_result(query, None, None, None).await
-        .unwrap()
+    let results: TwitterResults = get_twitter_result(query, None, None, None).unwrap();
+
+    let mut tweet_urls = Vec::new();
+
+    for (tweet, user) in results
         .tweets
         .unwrap()
         .iter()
-        .map(|tweet| format!("https://twitter.com/twitter/status/{}", tweet.id))
-        .collect();
+        .zip(results.users.unwrap().iter())
+    {
+        if (tweet.favorite_count > 100
+            && tweet
+                .text
+                .to_lowercase()
+                .contains(constants::PETERMANIAC_SLUG)
+            && TWEET_IDS.lock().unwrap().insert(tweet.id))
+        {
+            tweet_urls.push(format!(
+                "https://twitter.com/{}/status/{}",
+                user.screen_name, tweet.id
+            ));
+        }
+    }
 
-    Ok(results)
+    Ok(tweet_urls)
 }

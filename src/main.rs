@@ -15,5 +15,6 @@ fn main() {
     start_groupme_bot(
         env::var("GROUPME_GROUP").unwrap(),
         env::var("GROUPME_TOKEN").unwrap(),
+        env::var("GROUPME_BOT_ID").unwrap(),
     );
 }

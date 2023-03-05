@@ -12,7 +12,7 @@ pub struct Bot {
 }
 
 impl Bot {
-    /// Causes the bot to post a new message.
+    /// Posts a message.
     ///
     /// # Errors
     ///
@@ -31,39 +31,7 @@ impl Bot {
     /// ```
     pub fn post(&self, text: &str) -> Result<(), GroupmeError> {
         let gm_client = &self.client;
-        gm_client.post(&self.bot_id, text, None)
-    }
-
-    /// Causes the bot to post an image and message.
-    ///
-    /// Groupme will only accept image urls from their [Image Service](https://dev.groupme.com/docs/image_service).
-    ///
-    /// # Errors
-    ///
-    /// Returns an `Err(GroupmeError::AuthError)`
-    /// if the bot_id is not found.
-    ///
-    /// # Examples
-    ///
-    /// ```rust,no_run
-    /// use groupme_bot::{Groupme, Bot};
-    ///
-    /// let groupme = Groupme::new(None);
-    /// let bot: Bot = groupme.bot("Some bot_id");
-    ///
-    /// bot.post_image("Hello from Rust!", "https://i.groupme.com/something.large").unwrap();
-    /// ```
-
-    pub fn post_image(&self, text: &str, picture_url: &str) -> Result<(), GroupmeError> {
-        let gm_client = &self.client;
-        gm_client.post(&self.bot_id, text, Some(picture_url));
+        gm_client.post(&self.bot_id, text, None)?;
         Ok(())
-    }
-
-    /// Returns the bot_id for any created bot.
-    ///
-    /// Is not garanteed to match Groupme API if the `Bot` was created from its bot_id.
-    pub fn bot_id(&self) -> &str {
-        &self.bot_id
     }
 }

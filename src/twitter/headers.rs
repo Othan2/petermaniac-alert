@@ -1,8 +1,8 @@
 use crate::twitter::constants::{DEFAULT_AUTH_TOKEN, GENERATE_GUEST_TOKEN_URL};
-use reqwest::Client;
+use reqwest::blocking::Client;
 use serde_json::Value;
 
-pub async fn get_headers(
+pub fn get_headers(
     auth_token_option: Option<&'static str>,
     guest_token_option: Option<&'static str>,
 ) -> Result<[(&'static str, &'static str); 2], Box<dyn std::error::Error>> {
@@ -16,9 +16,8 @@ pub async fn get_headers(
             .post(GENERATE_GUEST_TOKEN_URL)
             .header("authorization", auth_token)
             .send()
-            .await?
-            .error_for_status()?;
-        let body_data: Value = response.json::<Value>().await?;
+            .unwrap();
+        let body_data: Value = response.json::<Value>().unwrap();
         let boxed_guest_token: Box<str> = body_data["guest_token"]
             .as_str()
             .unwrap()
