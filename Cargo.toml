@@ -18,3 +18,6 @@ cooked-waker = "*"
 pin-utils = "*"
 http = "*"
 lazy_static = "1.4.0"
+clap = { version = "*", features = ["derive"]}
+log = "*"
+env_logger = "*"

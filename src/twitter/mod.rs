@@ -14,6 +14,7 @@ use serde_json::Value;
 use std::collections::HashSet;
 extern crate lazy_static;
 use lazy_static::lazy_static;
+use log::{info, warn};
 use std::sync::Mutex;
 
 #[derive(Debug)]
@@ -30,6 +31,7 @@ pub fn get_twitter_result(
     guest_token_option: Option<&'static str>,
     cursor: Option<String>,
 ) -> Result<TwitterResults, Box<dyn std::error::Error>> {
+    info!("looking for tweets...");
     let headers_tuples: [(&'static str, &'static str); 2] =
         get_headers(auth_token_option, guest_token_option).unwrap();
     let request_config: RequestConfig =
