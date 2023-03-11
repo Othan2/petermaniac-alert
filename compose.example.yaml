@@ -1,0 +1,10 @@
+services:
+  bot:
+    image: petermaniac-alert
+    # currently unused:
+    ports: 8080:8080
+    networks:
+      - default-bridge
+
+  db:
+    image: postgres:latest

@@ -35,3 +35,9 @@ impl Bot {
         Ok(())
     }
 }
+
+impl Drop for Bot {
+    fn drop(self: &mut Bot) {
+        self.post("oops i died");
+    }
+}

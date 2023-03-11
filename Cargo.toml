@@ -21,3 +21,5 @@ lazy_static = "1.4.0"
 clap = { version = "*", features = ["derive"]}
 log = "*"
 env_logger = "*"
+postgres = "0.19.4"
+tokio-postgres = "0.7.7"
