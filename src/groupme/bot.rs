@@ -38,6 +38,6 @@ impl Bot {
 
 impl Drop for Bot {
     fn drop(self: &mut Bot) {
-        self.post("oops i died");
+        let _res = self.post("oops i died");
     }
 }

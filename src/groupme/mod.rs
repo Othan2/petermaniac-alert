@@ -29,7 +29,7 @@ pub fn start_groupme_bot(
             .get_tweet_urls_since(chrono::Local::now().naive_local() - Duration::days(3))
             .unwrap();
         for tweet_url in res {
-            bot.post(&tweet_url);
+            let _res = bot.post(&tweet_url);
         }
 
         std::thread::sleep(std::time::Duration::from_secs(10));

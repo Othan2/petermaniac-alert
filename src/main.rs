@@ -1,13 +1,10 @@
 mod groupme;
 mod twitter;
-use chrono::NaiveDate;
-pub use groupme::start_groupme_bot;
 
-use std::env;
+pub use groupme::start_groupme_bot;
 use clap::Parser;
-use log::Level;
 use twitter::twitter_client::TwitterClient;
-use postgres::{Client, NoTls};
+use postgres::{NoTls};
 
 
 /// Search for a pattern in a file and display the lines that contain it.

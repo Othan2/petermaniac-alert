@@ -1,18 +1,14 @@
 use super::constants::{PETERMANIAC_SLUG, TWITTER_BASE_URL};
 use super::headers::get_headers;
 use super::models::{Tweet, User};
-use super::parser::{get_next_cursor, get_tweets, get_users};
+use super::parser::{get_tweets, get_users};
 use super::request_builder::{build_request_config, RequestConfig};
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{NaiveDateTime};
 use postgres;
 use reqwest::blocking::Response;
 use serde_json::Value;
-use std::collections::HashSet;
-use tokio_postgres;
 extern crate lazy_static;
-use lazy_static::lazy_static;
 use log::info;
-use std::sync::Mutex;
 
 pub struct TwitterClient {
     api_token: String,
@@ -21,8 +17,6 @@ pub struct TwitterClient {
 
 #[derive(Debug)]
 struct TwitterResults {
-    pub cursor: String,
-    pub guest_token: String,
     pub tweets: Option<Vec<Tweet>>,
     pub users: Option<Vec<User>>,
 }
@@ -55,13 +49,9 @@ impl TwitterClient {
             .send()
             .unwrap();
         let body_data: Value = response.json::<Value>()?;
-        let next_cursor: String = get_next_cursor(&body_data, cursor)?;
         let tweets: Vec<Tweet> = get_tweets(&body_data);
         let users: Vec<User> = get_users(&body_data);
-        let guest_token: String = headers_tuples[1].1.to_string();
         let twitter_results = TwitterResults {
-            cursor: next_cursor,
-            guest_token,
             tweets: Some(tweets),
             users: Some(users),
         };
@@ -91,6 +81,7 @@ impl TwitterClient {
                 continue;
             }
 
+            // this needs to be optimized for if peterman starts trending.
             let res = self.db_client.execute(
                 "INSERT INTO tweet_ids(tweet_id) VALUES($1) ON CONFLICT DO NOTHING",
                 &[&tweet.id.to_string()],
