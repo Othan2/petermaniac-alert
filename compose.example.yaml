@@ -1,10 +1,34 @@
 services:
-  bot:
+  petermaniac-alert:
     image: petermaniac-alert
     # currently unused:
-    ports: 8080:8080
+    ports: [ 8080:8080 ]
+    build: .
+    command:
+      [
+        "--groupme-token=lznrn3b3d6SJOCU6uvd3KJflYz1etkXIPAJN5FNp",
+        "--bot-id=6e9a56722f19bca2cb935de60f",
+        "--group-id=92548633",
+        "--twitter-token", "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA",
+        "--postgres-params", "host=pdb port=5432 dbname=petermaniac_db password=docker user=petermaniac",
+      ]
     networks:
-      - default-bridge
+      - backend
+    depends_on:
+      - pdb
 
-  db:
-    image: postgres:latest
+  pdb:
+    image: pdb
+    build:
+      context: db/
+    volumes:
+      - db-data:/etc/data
+    ports: [ 5432:5432 ]
+    networks:
+      - backend
+
+volumes:
+  db-data:
+
+networks:
+  backend: {}

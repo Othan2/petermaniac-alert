@@ -22,7 +22,7 @@ struct Args {
     /// The id of the bot
     #[arg(short, long)]
     bot_id: String,
-    /// The postgres params. Format: host=localhost user=postgres
+    /// The postgres connection string. Format: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
     #[arg(short, long)]
     postgres_params: String,
 }

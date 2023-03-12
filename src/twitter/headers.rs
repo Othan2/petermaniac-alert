@@ -8,7 +8,7 @@ pub fn get_headers(
     guest_token_option: Option<&'static str>,
 ) -> Result<[(&'static str, &'static str); 2], Box<dyn std::error::Error>> {
     // TODO: clean up.
-    let auth_token: &'static str = Box::leak(default_auth_token.to_string().into_boxed_str());
+    let auth_token = auth_token_option.unwrap_or(Box::leak(default_auth_token.to_string().into_boxed_str()));
     let guest_token: &'static str;
     if guest_token_option.is_some() {
         guest_token = guest_token_option.unwrap();

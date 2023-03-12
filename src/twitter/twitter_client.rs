@@ -37,7 +37,7 @@ impl TwitterClient {
         cursor: Option<String>,
     ) -> Result<TwitterResults, Box<dyn std::error::Error>> {
         info!("looking for tweets...");
-        let headers_tuples: [(&'static str, &'static str); 2] =
+        let headers_tuples =
             get_headers(&self.api_token, auth_token_option, guest_token_option).unwrap();
         let request_config: RequestConfig =
             build_request_config(&headers_tuples, query, cursor.clone());
@@ -77,7 +77,7 @@ impl TwitterClient {
             .iter()
             .zip(results.users.unwrap().iter())
         {
-            if tweet.favorite_count < 100 || !tweet.text.to_lowercase().contains(PETERMANIAC_SLUG) {
+            if tweet.favorite_count < 10 || !tweet.text.to_lowercase().contains(PETERMANIAC_SLUG) {
                 continue;
             }
 
@@ -87,7 +87,8 @@ impl TwitterClient {
                 &[&tweet.id.to_string()],
             )?;
 
-            if res == 0 {
+            println!("res: {}", res);
+            if res > 0 {
                 tweet_urls.push(format!(
                     "https://twitter.com/{}/status/{}",
                     user.screen_name, tweet.id
